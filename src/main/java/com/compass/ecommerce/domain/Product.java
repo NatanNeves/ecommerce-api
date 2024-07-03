@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -31,6 +29,9 @@ public class Product implements Serializable {
 
     @Column(nullable = false)
     private Boolean available;
+
+    @Column(nullable = false)
+    private Integer quantity;
 
     @ManyToOne
     @JoinColumn(name = "stock_id")
