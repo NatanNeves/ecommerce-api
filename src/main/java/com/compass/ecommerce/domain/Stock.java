@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of ="id")
 public class Stock implements Serializable {
     private static final long SerialVersionUID = 1L;
 
