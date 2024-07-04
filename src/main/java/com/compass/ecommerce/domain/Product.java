@@ -1,5 +1,6 @@
 package com.compass.ecommerce.domain;
 
+import com.compass.ecommerce.dtos.ProductDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +28,6 @@ public class Product implements Serializable {
     @Column(nullable = false)
     private Double price;
 
-    @Column(nullable = false)
     private Boolean available;
 
     @Column(nullable = false)
@@ -36,4 +36,11 @@ public class Product implements Serializable {
     @ManyToOne
     @JoinColumn(name = "stock_id")
     private Stock stock;
+
+    Product(ProductDTO data){
+        this.name = data.name();
+        this.description = data.description();
+        this.price = data.price();
+        this.quantity = data.quantity();
+    }
 }

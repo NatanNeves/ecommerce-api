@@ -1,12 +1,16 @@
 package com.compass.ecommerce.services;
 
+
+import com.compass.ecommerce.domain.Stock;
 import com.compass.ecommerce.dtos.ProductDTO;
 import com.compass.ecommerce.domain.Product;
 import com.compass.ecommerce.repositories.ProductRepository;
 import com.compass.ecommerce.repositories.StockRepository;
+import com.compass.ecommerce.services.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,30 +23,55 @@ public class ProductService {
     private StockRepository stockRepository;
 
 
+
+
+    public List<Product> allProducts(){
+        List<Product> products = productRepository.findAll();
+        return products;
+    }
+
     public Optional<Product> findByName(String name){
         return productRepository.findByName(name);
     }
 
-    public Product createProduct(ProductDTO data) throws Exception {
-        if (productRepository.findByName(data.name()).isEmpty()) {
-            this.priceValidate(data.price());
+    public Product findById(Long id) {
+        Optional<Product> product = productRepository.findById(id);
+        return product.orElseThrow(() -> new ProductNotFoundException("Produto não encontrado"));
+    }
 
-            Product prod = new Product();
-            prod.setName(data.name());
-            prod.setDescription(data.description());
-            prod.setPrice(data.price());
-            prod.setQuantity(data.quantity());
-            return productRepository.save(prod);
+    public Product createProduct(ProductDTO productDTO) throws Exception {
+        if (productRepository.findByName(productDTO.name()).isEmpty()) {
+            priceValidate(productDTO.price());
 
+            Product newProduct = new Product();
+            newProduct.setName(productDTO.name());
+            newProduct.setDescription(productDTO.description());
+            newProduct.setPrice(productDTO.price());
+            newProduct.setQuantity(productDTO.quantity());
+            newProduct.setAvailable(true);
+
+            Stock stock = new Stock();
+            stock.setQuantity(productDTO.quantity());
+            stock = stockRepository.save(stock);
+            newProduct.setStock(stock);
+
+            Product savedProduct = productRepository.save(newProduct);
+            stockRepository.addStock(stock.getId(), productDTO.quantity());
+            return savedProduct;
         } else {
-            throw new Exception("este produto já existe");
+            throw new Exception("Este produto já existe");
         }
     }
 
 
+
     public Product updateProduct(Long id, ProductDTO data) throws Exception {
+        existingProductValidate(id);
+
         Optional<Product> existingProductOpt = productRepository.findById(id);
-        this.existingProductValidate(id);
+        if (existingProductOpt.isEmpty()) {
+            throw new Exception("Produto não encontrado com o ID fornecido: " + id);
+        }
 
         Product existingProduct = existingProductOpt.get();
         existingProduct.setName(data.name());
@@ -50,9 +79,10 @@ public class ProductService {
         existingProduct.setPrice(data.price());
         existingProduct.setQuantity(data.quantity());
 
-        this.priceValidate(data.price());
+        priceValidate(data.price());
         return productRepository.save(existingProduct);
     }
+
 
     public void priceValidate(Double price) throws Exception {
         if (price == null || price <= 0) {
@@ -60,20 +90,21 @@ public class ProductService {
         }
     }
 
-    public void deleteProduct(Long id) throws Exception {
-        Optional<Product> existingProductOpt = productRepository.findById(id);
-        this.existingProductValidate(id);
 
-        Product existingProduct = existingProductOpt.get();
+    public void deleteProduct(Long id) throws Exception {
+        Product existingProduct = existingProductValidate(id);
+        stockRepository.delete(existingProduct.getStock());
         productRepository.delete(existingProduct);
     }
 
-    public Product existingProductValidate(Long id) throws Exception {
+    private Product existingProductValidate(Long id) throws Exception {
         Optional<Product> existingProductOpt = productRepository.findById(id);
 
         if (existingProductOpt.isEmpty()) {
-            throw new Exception("ID de produto inválido");
+            throw new Exception("Produto não encontrado com o ID: " + id);
         }
+
         return existingProductOpt.get();
     }
+
 }
