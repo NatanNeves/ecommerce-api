@@ -23,11 +23,8 @@ public class ProductService {
     private StockRepository stockRepository;
 
 
-
-
     public List<Product> allProducts(){
-        List<Product> products = productRepository.findAll();
-        return products;
+        return productRepository.findAll();
     }
 
     public Optional<Product> findByName(String name){
@@ -63,8 +60,6 @@ public class ProductService {
         }
     }
 
-
-
     public Product updateProduct(Long id, ProductDTO data) throws Exception {
         existingProductValidate(id);
 
@@ -83,13 +78,11 @@ public class ProductService {
         return productRepository.save(existingProduct);
     }
 
-
     public void priceValidate(Double price) throws Exception {
         if (price == null || price <= 0) {
             throw new Exception("O preço deve ser positivo e não pode ser nulo");
         }
     }
-
 
     public void deleteProduct(Long id) throws Exception {
         Product existingProduct = existingProductValidate(id);
@@ -106,5 +99,4 @@ public class ProductService {
 
         return existingProductOpt.get();
     }
-
 }
