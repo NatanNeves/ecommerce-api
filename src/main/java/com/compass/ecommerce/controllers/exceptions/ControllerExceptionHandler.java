@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<StandardError> ProductNotFound(ProductNotFoundException e, HttpServletRequest request){
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<StandardError> ProductNotFound(NotFoundException e, HttpServletRequest request){
         StandardError error = new StandardError();
         error.setCode(HttpStatus.NOT_FOUND.value());
         error.setStatus(HttpStatus.NOT_FOUND.toString()); //404
@@ -19,8 +19,8 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(ExistingProductException.class)
-    public ResponseEntity<StandardError> existingProduct(ExistingProductException e, HttpServletRequest request) {
+    @ExceptionHandler(ExistingObjectException.class)
+    public ResponseEntity<StandardError> existingProduct(ExistingObjectException e, HttpServletRequest request) {
         StandardError error = new StandardError();
         error.setCode(HttpStatus.CONFLICT.value()); // 409
         error.setStatus(HttpStatus.CONFLICT.toString());

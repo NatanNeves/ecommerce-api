@@ -36,7 +36,7 @@ public class ProductService {
 
     public Product findById(Long id) {
         Optional<Product> product = productRepository.findById(id);
-        return product.orElseThrow(() -> new ProductNotFoundException("Produto não encontrado"));
+        return product.orElseThrow(() -> new NotFoundException("Produto não encontrado"));
     }
 
     public Product createProduct(ProductDTO productDTO){
@@ -45,7 +45,7 @@ public class ProductService {
         quantityValidate(productDTO.quantity());
 
         if (productRepository.findByName(productDTO.name()).isPresent()) {
-            throw new ExistingProductException("Este produto já existe");
+            throw new ExistingObjectException("Este produto já existe");
         }
 
         Product newProduct = new Product();
@@ -72,7 +72,7 @@ public class ProductService {
         existingProductValidate(id);
         Optional<Product> existingProductOpt = productRepository.findById(id);
         if (existingProductOpt.isEmpty()) {
-            throw new ProductNotFoundException("Produto não encontrado");
+            throw new NotFoundException("Produto não encontrado");
         }
 
         Product existingProduct = existingProductOpt.get();
@@ -106,7 +106,7 @@ public class ProductService {
     private Product existingProductValidate(Long id) {
         Optional<Product> existingProductOpt = productRepository.findById(id);
         if (existingProductOpt.isEmpty()) {
-            throw new ProductNotFoundException("Produto não encontrado");
+            throw new NotFoundException("Produto não encontrado");
         }
         return existingProductOpt.get();
     }
