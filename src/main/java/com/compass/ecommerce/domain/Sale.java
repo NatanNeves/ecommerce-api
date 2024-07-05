@@ -6,7 +6,9 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "sale")
@@ -24,6 +26,7 @@ public class Sale implements Serializable {
     private LocalDate date;
     private Double total;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
-    private List<Item> items = new ArrayList<>();
+
+    @OneToMany(mappedBy = "id.sale")
+    private Set<Item> items = new HashSet<>();
 }
