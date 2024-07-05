@@ -1,7 +1,11 @@
 package com.compass.ecommerce.domain;
 
 import com.compass.ecommerce.dtos.ProductDTO;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.io.Serializable;
@@ -20,17 +24,19 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotEmpty
     private String name;
-
     private String description;
 
-    @Column(nullable = false)
+    @Positive
+    @Min(value = 1)
+    @Nullable
     private Double price;
-
     private Boolean available;
 
-    @Column(nullable = false)
+    @Positive
+    @Min(value = 1)
+    @Nullable
     private Integer quantity;
 
     @ManyToOne

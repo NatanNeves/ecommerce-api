@@ -3,6 +3,7 @@ package com.compass.ecommerce.controllers;
 import com.compass.ecommerce.domain.Product;
 import com.compass.ecommerce.dtos.ProductDTO;
 import com.compass.ecommerce.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class ProductController {
     }
 
     @PostMapping()
-    public ResponseEntity<Product> createProduct(@RequestBody ProductDTO productDTO) throws Exception {
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductDTO  productDTO) throws Exception {
         Product newProduct = productService.createProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
     }
@@ -43,7 +44,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) throws Exception {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO) throws Exception {
         Product updatedProduct = productService.updateProduct(id, productDTO);
         return ResponseEntity.ok(updatedProduct);
     }
