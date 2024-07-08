@@ -1,9 +1,11 @@
 package com.compass.ecommerce.services;
 
 
+import com.compass.ecommerce.domain.Item;
 import com.compass.ecommerce.domain.Stock;
 import com.compass.ecommerce.dtos.ProductDTO;
 import com.compass.ecommerce.domain.Product;
+import com.compass.ecommerce.repositories.ItemRepository;
 import com.compass.ecommerce.repositories.ProductRepository;
 import com.compass.ecommerce.repositories.StockRepository;
 import com.compass.ecommerce.services.exceptions.*;
@@ -24,6 +26,9 @@ public class ProductService {
 
     @Autowired
     private StockRepository stockRepository;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
 
     public List<Product> allProducts(){
@@ -87,13 +92,24 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
         Product existingProduct = existingProductValidate(id);
-        stockRepository.delete(existingProduct.getStock());
-        productRepository.delete(existingProduct);
+
+        // Busca por itens de venda que contenham o produto
+        List<Item> itemsWithProduct = itemRepository.findByProduct(existingProduct);
+
+        if (!itemsWithProduct.isEmpty()) {
+            // Se houver itens de venda com o produto, marca o produto como indisponível
+            existingProduct.setAvailable(false);
+            productRepository.save(existingProduct);
+        } else {
+            // Se não houver itens de venda com o produto, pode ser deletado
+            stockRepository.delete(existingProduct.getStock());
+            productRepository.delete(existingProduct);
+        }
     }
 
     private void priceValidate(Double value) {
         if (value == null || value < 0) {
-            throw new PositiveValueException("O preço deve ser que 0");
+            throw new PositiveValueException("O preço deve ser maior que 0");
         }
     }
 

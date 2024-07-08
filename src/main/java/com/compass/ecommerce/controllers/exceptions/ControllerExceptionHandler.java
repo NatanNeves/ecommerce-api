@@ -45,4 +45,13 @@ public class ControllerExceptionHandler {
         error.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<StandardError> fieldIsEmpty(InsufficientStockException e, HttpServletRequest request) {
+        StandardError error = new StandardError();
+        error.setCode(HttpStatus.BAD_REQUEST.value()); // 400
+        error.setStatus(HttpStatus.BAD_REQUEST.toString());
+        error.setMessage(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

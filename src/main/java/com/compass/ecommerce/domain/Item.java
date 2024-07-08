@@ -25,18 +25,12 @@ public class Item implements Serializable {
     private Double price;
     private Double subtotal;
 
-    public Item(Product product, Sale sale, Integer quantity, Double price){
-       this.id.setProduct(product);
-       this.id.setSale(sale);
-       this.quantity = quantity;
-       this.subtotal = quantity * price;
-    }
-
-    public Sale getSale(){
-        return id.getSale();
-    }
-
-    public Product getProduct(){
-        return id.getProduct();
+    public Item(Product product, Sale sale, Integer quantity, Double price) {
+        this.id = new ItemPK();
+        this.id.setProduct(product);
+        this.id.setSale(sale);
+        this.quantity = quantity;
+        this.price = price;
+        this.subtotal = quantity * price;
     }
 }

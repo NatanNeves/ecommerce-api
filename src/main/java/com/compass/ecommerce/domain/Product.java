@@ -1,7 +1,7 @@
 package com.compass.ecommerce.domain;
 
 import com.compass.ecommerce.dtos.ProductDTO;
-import jakarta.annotation.Nullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -45,6 +45,7 @@ public class Product implements Serializable {
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "id.product")
     private Set<Item> items = new HashSet<>();
 
