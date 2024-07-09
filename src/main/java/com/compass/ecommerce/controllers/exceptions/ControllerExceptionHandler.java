@@ -14,7 +14,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> ProductNotFound(NotFoundException e, HttpServletRequest request){
         StandardError error = new StandardError();
         error.setCode(HttpStatus.NOT_FOUND.value());
-        error.setStatus(HttpStatus.NOT_FOUND.toString()); //404
+        error.setStatus(HttpStatus.NOT_FOUND); //404
         error.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -23,7 +23,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> existingProduct(ExistingObjectException e, HttpServletRequest request) {
         StandardError error = new StandardError();
         error.setCode(HttpStatus.CONFLICT.value()); // 409
-        error.setStatus(HttpStatus.CONFLICT.toString());
+        error.setStatus(HttpStatus.CONFLICT);
         error.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
@@ -32,7 +32,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> fieldIsEmpty(EmptyFieldException e, HttpServletRequest request) {
         StandardError error = new StandardError();
         error.setCode(HttpStatus.BAD_REQUEST.value()); // 400
-        error.setStatus(HttpStatus.BAD_REQUEST.toString());
+        error.setStatus(HttpStatus.BAD_REQUEST);
         error.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -41,7 +41,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> fieldIsEmpty(PositiveValueException e, HttpServletRequest request) {
         StandardError error = new StandardError();
         error.setCode(HttpStatus.BAD_REQUEST.value()); // 400
-        error.setStatus(HttpStatus.BAD_REQUEST.toString());
+        error.setStatus(HttpStatus.BAD_REQUEST);
         error.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -50,7 +50,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> fieldIsEmpty(InsufficientStockException e, HttpServletRequest request) {
         StandardError error = new StandardError();
         error.setCode(HttpStatus.BAD_REQUEST.value()); // 400
-        error.setStatus(HttpStatus.BAD_REQUEST.toString());
+        error.setStatus(HttpStatus.BAD_REQUEST);
         error.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }

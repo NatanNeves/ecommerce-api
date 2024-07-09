@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,6 +13,6 @@ import lombok.Setter;
 public class StandardError {
 
     private Integer code;
-    private String status;
+    private HttpStatus status;
     private String message;
 }

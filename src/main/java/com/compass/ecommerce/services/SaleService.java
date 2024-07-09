@@ -6,6 +6,7 @@ import com.compass.ecommerce.repositories.ItemRepository;
 import com.compass.ecommerce.repositories.ProductRepository;
 import com.compass.ecommerce.repositories.SaleRepository;
 import com.compass.ecommerce.repositories.StockRepository;
+import com.compass.ecommerce.services.exceptions.InsufficientStockException;
 import com.compass.ecommerce.services.exceptions.NotFoundException;
 import com.compass.ecommerce.services.exceptions.PositiveValueException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,15 @@ public class SaleService {
                 Product product = productRepository.findById(itemDTO.getProduct().getId())
                         .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
 
+                // Verifica se há estoque suficiente para o produto
+                if (product.getQuantity() < itemDTO.getQuantity()) {
+                    throw new InsufficientStockException("Estoque insuficiente para o produto: " + product.getName());
+                }
+
+                // Decrementa o estoque do produto
+                product.setQuantity(product.getQuantity() - itemDTO.getQuantity());
+                productRepository.save(product);
+
                 Item item = new Item(product, sale, itemDTO.getQuantity(), itemDTO.getPrice());
                 itemsToSave.add(item);
 
@@ -88,6 +98,7 @@ public class SaleService {
 
         return sale;
     }
+
 
 
     public Sale updateSale(Long saleId, SaleDTO saleDTO) {
@@ -146,10 +157,10 @@ public class SaleService {
         saleRepository.delete(sale);
     }
 
-    public static List<Sale> filterByDate(List<Sale> sales, Instant startDate, Instant endDate) {
-        return sales.stream()
-                .filter(sale -> sale.getTimestamp().isAfter(startDate) && sale.getTimestamp().isBefore(endDate))
-                .collect(Collectors.toList());
+    public List<Sale> getSales(String startDate, String endDate) {
+        Instant start = Instant.parse(startDate);
+        Instant end = Instant.parse(endDate);
+        return saleRepository.findByTimestampBetween(start, end);
     }
 
     public static List<Sale> monthlyReport(List<Sale> sales, YearMonth yearMonth) {

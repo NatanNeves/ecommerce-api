@@ -17,7 +17,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sales")
+@RequestMapping("/api/v1/sales")
 public class SaleController {
 
     @Autowired
@@ -48,6 +48,11 @@ public class SaleController {
         List<Sale> sales = saleService.findAll(); // Aqui você pode usar um método específico para buscar as vendas semanais no serviço
         List<Sale> weeklySales = SaleService.weeklyReport(sales, startDate, endDate);
         return ResponseEntity.ok(weeklySales);
+    }
+
+    @GetMapping("/sales")
+    public List<Sale> getSales(@RequestParam String startDate, @RequestParam String endDate) {
+        return saleService.getSales(startDate, endDate);
     }
 
     @GetMapping("/{id}")
