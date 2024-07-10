@@ -11,6 +11,7 @@ import com.compass.ecommerce.repositories.StockRepository;
 import com.compass.ecommerce.services.exceptions.*;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,15 +31,16 @@ public class ProductService {
     @Autowired
     private ItemRepository itemRepository;
 
-
+    @Cacheable("AllProducts")
     public List<Product> allProducts(){
         return productRepository.findAll();
     }
 
-    public Optional<Product> findByName(String name){
+    private Optional<Product> findByName(String name){
         return productRepository.findByName(name);
     }
 
+    @Cacheable(value = "products", key = "#id")
     public Product findById(Long id) {
         Optional<Product> product = productRepository.findById(id);
         return product.orElseThrow(() -> new NotFoundException("Produto não encontrado"));

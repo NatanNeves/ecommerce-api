@@ -10,6 +10,9 @@ import com.compass.ecommerce.services.exceptions.InsufficientStockException;
 import com.compass.ecommerce.services.exceptions.NotFoundException;
 import com.compass.ecommerce.services.exceptions.PositiveValueException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -38,16 +41,21 @@ public class SaleService {
     private ProductRepository productRepository;
 
 
+    @Cacheable("AllSales")
     public List<Sale> findAll(){
         return saleRepository.findAll();
     }
 
+    @Cacheable(value = "sales", key = "#id")
     public Sale findById(Long id) {
         Optional<Sale> sale = saleRepository.findById(id);
         return sale.orElseThrow(() -> new NotFoundException("Venda não encontrada"));
     }
 
-
+    @Caching(evict = {
+            @CacheEvict(value = "allSales", allEntries = true),
+            @CacheEvict(value = "sales", key = "#sale.id")
+    })
     public Sale createSale(SaleDTO saleDTO) {
         // Verifica se há pelo menos um item no DTO
         if (saleDTO.items().isEmpty()) {
@@ -98,8 +106,6 @@ public class SaleService {
 
         return sale;
     }
-
-
 
     public Sale updateSale(Long saleId, SaleDTO saleDTO) {
         // Busca a venda existente pelo ID
