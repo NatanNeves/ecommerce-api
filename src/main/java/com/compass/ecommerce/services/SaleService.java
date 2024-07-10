@@ -163,7 +163,7 @@ public class SaleService {
         saleRepository.delete(sale);
     }
 
-    public List<Sale> getSales(String startDate, String endDate) {
+    public List<Sale> getSalesByDate(String startDate, String endDate) {
         Instant start = Instant.parse(startDate);
         Instant end = Instant.parse(endDate);
         return saleRepository.findByTimestampBetween(start, end);
