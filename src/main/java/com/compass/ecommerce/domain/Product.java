@@ -49,6 +49,14 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "id.product")
     private Set<Item> items = new HashSet<>();
 
+    //contrutor para a classe de teste
+    public Product(String name, String description, Double price, Integer quantity) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
     Product(ProductDTO data){
         this.name = data.name();
         this.description = data.description();
