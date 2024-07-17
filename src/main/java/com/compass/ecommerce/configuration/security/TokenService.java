@@ -28,9 +28,10 @@ public class TokenService {
                     .withIssuer("auth-api")
                     .withSubject(user.getLogin())
                     .withExpiresAt(now().plusSeconds(7200))
+                    .withIssuedAt(now())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Error while generating token", exception);
+            throw new RuntimeException("Erro enquanto gerava o token", exception);
         }
     }
 

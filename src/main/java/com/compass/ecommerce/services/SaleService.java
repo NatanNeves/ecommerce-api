@@ -2,10 +2,7 @@ package com.compass.ecommerce.services;
 
 import com.compass.ecommerce.domain.*;
 import com.compass.ecommerce.dtos.SaleDTO;
-import com.compass.ecommerce.repositories.ItemRepository;
-import com.compass.ecommerce.repositories.ProductRepository;
-import com.compass.ecommerce.repositories.SaleRepository;
-import com.compass.ecommerce.repositories.StockRepository;
+import com.compass.ecommerce.repositories.*;
 import com.compass.ecommerce.services.exceptions.InsufficientStockException;
 import com.compass.ecommerce.services.exceptions.NotFoundException;
 import com.compass.ecommerce.services.exceptions.PositiveValueException;
@@ -13,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -39,6 +40,9 @@ public class SaleService {
 
     @Autowired
     private ProductRepository productRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Cacheable("AllSales")
@@ -54,19 +58,23 @@ public class SaleService {
 
     @Caching(evict = {
             @CacheEvict(value = "allSales", allEntries = true),
-            @CacheEvict(value = "sales", key = "#sale.id")
+            @CacheEvict(value = "sales", key = "#result.id")
     })
     public Sale createSale(SaleDTO saleDTO) {
-        // Verifica se há pelo menos um item no DTO
         if (saleDTO.items().isEmpty()) {
             throw new NotFoundException("A venda deve conter pelo menos um item");
         }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();  // Login do usuário autenticado
+
+        User userSale = userRepository.findByLogin(currentPrincipalName);
 
         Sale sale = new Sale();
         sale.setTimestamp(Instant.now());
         Double totalVenda = 0.0;
 
-        Set<Item> items = saleDTO.items(); // Corrigido para usar getItems() em vez de items()
+        Set<Item> items = saleDTO.items();
         Set<Item> itemsToSave = new HashSet<>();
 
         for (Item itemDTO : items) {
@@ -96,14 +104,14 @@ public class SaleService {
 
         // Primeiro salva a venda
         sale.setTotal(totalVenda);
+        sale.setUser(userSale);
         sale = saleRepository.save(sale);
 
         // Depois salva os itens
         for (Item item : itemsToSave) {
             itemRepository.save(item);
-            sale.getItems().add(item); // Atualiza a lista de itens da venda
+            sale.getItems().add(item);
         }
-
         return sale;
     }
 

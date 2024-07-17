@@ -35,9 +35,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                // Handle case where user is not found
-                // You may choose to log an error or handle this case based on your application's requirements
-                System.out.println("User not found for login: " + login);
+                System.out.println("usuario não encontrado com o login " + login);
             }
         }
 

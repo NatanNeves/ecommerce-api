@@ -38,12 +38,14 @@ public class AuthenticationController {
 
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
+        User usert = (User) auth.getPrincipal();
+        System.out.println("**************");
+        System.out.println(usert.getAuthorities());
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody RegisterDTO data) {
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
         userService.createUser(data);
 
         return ResponseEntity.ok().build();

@@ -29,6 +29,8 @@ public class Item implements Serializable {
         this.id = new ItemPK();
         this.id.setProduct(product);
         this.id.setSale(sale);
+        this.product = product;
+        this.sale = sale;
         this.quantity = quantity;
         this.price = price;
         this.subtotal = quantity * price;
