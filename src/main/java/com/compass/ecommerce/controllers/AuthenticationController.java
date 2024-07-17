@@ -1,6 +1,9 @@
 package com.compass.ecommerce.controllers;
 
+import com.compass.ecommerce.configuration.security.TokenService;
+import com.compass.ecommerce.domain.User;
 import com.compass.ecommerce.dtos.AuthenticationDTO;
+import com.compass.ecommerce.dtos.LoginResponseDTO;
 import com.compass.ecommerce.dtos.RegisterDTO;
 import com.compass.ecommerce.services.UserService;
 
@@ -25,12 +28,17 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((User) auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")
