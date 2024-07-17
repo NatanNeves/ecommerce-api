@@ -102,6 +102,7 @@ public class ProductService {
             // Se houver itens de venda com o produto, marca o produto como indisponível
             existingProduct.setAvailable(false);
             productRepository.save(existingProduct);
+            throw new ExistingObjectException("O produto não pode ser excluido pois está incluso em uma venda");
         } else {
             // Se não houver itens de venda com o produto, pode ser deletado
             stockRepository.delete(existingProduct.getStock());
