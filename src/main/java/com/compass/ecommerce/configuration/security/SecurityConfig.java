@@ -29,20 +29,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        // Rotas públicas
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/products").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/products").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/sales/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/sales").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/sales/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/sales").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/sales/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/sales").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/sales/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/v1/sales/**").permitAll()
+                        // Apenas admins
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/products").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/sales/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole("ADMIN")
+                        // Todos os outros endpoints autenticados
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
